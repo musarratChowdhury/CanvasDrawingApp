@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- <script src="dist/app.js"></script> -->
+    <script type="module" src="dist/practice.js"></script>
+
+    <!-- <script src="final/bundle.js"></script> -->
+    <style>
+      #game-canvas {
+        /* border: dotted 3px gray; */
+        background-color: lightgray;
+        cursor: move;
+      }
+      .count-display {
+        text-align: center;
+      }
+      .select-box,
+      .buttons {
+        text-align: center;
+      }
+      #clearButton {
+        padding: 5px;
+      }
+      h3 {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <h3>Draw Anything you want</h3>
+      <canvas class="game-canvas" id="game-canvas" width="400px" height="300px">
+        Your Browser doesn't support HTML5 canvas;
+      </canvas>
+      <div class="select-box">
+        <label for="color">Color : </label>
+        <input type="color" name="color" id="color" />
+        <label for="lineWidth">Thickness : </label>
+        <input
+          type="range"
+          name="lineWidth"
+          id="lineWidth"
+          min="1"
+          max="20"
+          value="1"
+        />
+        <button id="clearButton">
+          <i class="fa-solid fa-arrows-rotate"></i>
+        </button>
+      </div>
+    </div>
+    <div class="count-display"></div>
+  </body>
+</html>
