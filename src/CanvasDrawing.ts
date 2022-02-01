@@ -29,6 +29,7 @@ export class GameCanvas {
   public static _rectCount: number = 0;
 
   private _ctx: any = this.gameCanvas.getContext("2d");
+
   constructor(
     private gameCanvas: HTMLCanvasElement,
     private width: number,
@@ -139,6 +140,8 @@ export class GameCanvas {
     radius: number,
     startAngle: number,
     endAngle: ArcStatus,
+    fillcolor?: string,
+    strokecolor?: string,
     circleStatus?: IClockStatus,
     lineWidth?: number,
     strokeStyle?: string
@@ -154,7 +157,16 @@ export class GameCanvas {
     );
     if (lineWidth) this.ctx.linewidth = lineWidth;
     if (strokeStyle) this.ctx.strokeStyle = strokeStyle;
+    if (fillcolor) {
+      this.ctx.fillStyle = fillcolor;
+      this.ctx.fill();
+    }
+    if (strokecolor) {
+      this.ctx.strokeStyle = strokecolor;
+      this.ctx.stroke();
+    }
     this.ctx.stroke();
+    this.ctx.closePath();
   }
   drawPath(): void {}
   drawCurves(typeOfCurve: string): void {}

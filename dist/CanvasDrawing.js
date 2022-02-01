@@ -81,14 +81,23 @@ export class GameCanvas {
         this.ctx.strokeStyle = color;
         this.ctx.stroke();
     }
-    drawCircle(x, y, radius, startAngle, endAngle, circleStatus, lineWidth, strokeStyle) {
+    drawCircle(x, y, radius, startAngle, endAngle, fillcolor, strokecolor, circleStatus, lineWidth, strokeStyle) {
         this.ctx.beginPath();
         this.ctx.arc(x, y, radius, startAngle, endAngle * Math.PI, circleStatus === null || circleStatus === void 0 ? void 0 : circleStatus.clockStatus);
         if (lineWidth)
             this.ctx.linewidth = lineWidth;
         if (strokeStyle)
             this.ctx.strokeStyle = strokeStyle;
+        if (fillcolor) {
+            this.ctx.fillStyle = fillcolor;
+            this.ctx.fill();
+        }
+        if (strokecolor) {
+            this.ctx.strokeStyle = strokecolor;
+            this.ctx.stroke();
+        }
         this.ctx.stroke();
+        this.ctx.closePath();
     }
     drawPath() { }
     drawCurves(typeOfCurve) { }

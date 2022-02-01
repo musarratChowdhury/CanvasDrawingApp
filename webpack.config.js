@@ -1,6 +1,6 @@
 module.exports = {
   //define entry point
-  entry: "./dist/practice.js",
+  entry: "./dist/drawingBoard.js",
 
   //define output point
   output: {
