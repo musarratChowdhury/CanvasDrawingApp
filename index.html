@@ -12,30 +12,12 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <!-- <script src="dist/app.js"></script> -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- <script type="module" src="dist/drawingBoard.js"></script> -->
     <script type="module" src="final/bundle.js"></script>
 
     <!-- <script src="final/bundle.js"></script> -->
-    <style>
-      #game-canvas {
-        /* border: dotted 3px gray; */
-        background-color: lightgray;
-        cursor: move;
-      }
-      .count-display {
-        text-align: center;
-      }
-      .select-box,
-      .buttons {
-        text-align: center;
-      }
-      #clearButton {
-        padding: 5px;
-      }
-      h3 {
-        text-align: center;
-      }
-    </style>
   </head>
   <body>
     <div id="container">
@@ -45,7 +27,7 @@
       </canvas>
       <div class="select-box">
         <label for="color">Color : </label>
-        <input type="color" name="color" id="color" />
+        <input type="color" value="#24B0D5" name="color" id="color" />
         <label for="lineWidth">Thickness : </label>
         <input
           type="range"
@@ -55,9 +37,33 @@
           max="20"
           value="1"
         />
-        <button id="clearButton">
-          <i class="fa-solid fa-arrows-rotate"></i>
-        </button>
+        <div class="button-box">
+          <button id="clearButton" class="clear-btn">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+          <button id="paint-bucket" class="paint-bucket-btn">
+            <i class="fa-solid fa-fill-drip"></i>
+          </button>
+          <button id="eraser" class="eraser-btn">
+            <i class="fa-solid fa-eraser"></i>
+          </button>
+          <button id="circle-dashed" class="circle-dashed-btn">
+            <i class="fa-solid fa-circle-dashed">O</i>
+          </button>
+          <button id="circle-fill" class="circle-fill">
+            <i class="fa-solid fa-circle"></i>
+          </button>
+
+          <button id="square-dashed" class="square-dashed-btn">
+            <i class="fa-solid fa-square-dashed">🔳</i>
+          </button>
+          <button id="square-fill" class="square-fill">
+            <i class="fa-solid fa-square"></i>
+          </button>
+          <button id="undo-btn" class="undo-btn">
+            <i class="fa-solid fa-rotate-left"></i>
+          </button>
+        </div>
       </div>
     </div>
     <div class="count-display"></div>

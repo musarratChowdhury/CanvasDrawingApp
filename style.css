@@ -1,0 +1,51 @@
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+body {
+  background-color: beige;
+}
+#game-canvas {
+  /* border: dotted 3px gray; */
+  background-color: lightgray;
+  cursor: move;
+}
+
+/* butoons */
+
+.button-box {
+  display: flex;
+  justify-content: center;
+}
+.button-box button {
+  padding: 0.5rem;
+
+  font-size: 1rem;
+  margin-left: 0.4rem;
+  cursor: pointer;
+}
+.button-box button {
+  box-shadow: 7px 10px 12px -3px #000000;
+}
+.selected {
+  background-color: rgb(105, 102, 102);
+  box-shadow: 0 0 0 0 !important;
+  color: white;
+}
+.circle-dashed-btn i {
+  font-size: 1.1rem;
+}
+/* butons
+ */
+.count-display {
+  text-align: center;
+}
+.select-box,
+.buttons {
+  text-align: center;
+}
+
+h3 {
+  text-align: center;
+}

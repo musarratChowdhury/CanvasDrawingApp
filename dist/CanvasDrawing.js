@@ -1,4 +1,21 @@
 //
+export var CircleOptions;
+(function (CircleOptions) {
+    CircleOptions[CircleOptions["fill"] = 0] = "fill";
+    CircleOptions[CircleOptions["stroke"] = 1] = "stroke";
+    CircleOptions[CircleOptions["dashedStroke"] = 2] = "dashedStroke";
+})(CircleOptions || (CircleOptions = {}));
+export var RectOptions;
+(function (RectOptions) {
+    RectOptions[RectOptions["fill"] = 0] = "fill";
+    RectOptions[RectOptions["stroke"] = 1] = "stroke";
+    RectOptions[RectOptions["dashedStroke"] = 2] = "dashedStroke";
+})(RectOptions || (RectOptions = {}));
+export var IClockStatus;
+(function (IClockStatus) {
+    IClockStatus[IClockStatus["true"] = 0] = "true";
+    IClockStatus[IClockStatus["false"] = 1] = "false";
+})(IClockStatus || (IClockStatus = {}));
 export var ArcStatus;
 (function (ArcStatus) {
     ArcStatus[ArcStatus["FullCircle"] = 2] = "FullCircle";
@@ -22,14 +39,32 @@ export class GameCanvas {
     get Height() {
         return this.gameCanvas.height;
     }
+    setFillStyle(color) {
+        this.ctx ? (this.ctx.fillStyle = color) : null;
+    }
     get ctx() {
         return this._ctx;
     }
     SaveState() {
-        this.ctx.save();
+        var _a;
+        (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.save();
     }
     RestoreState() {
-        this.ctx.restore();
+        var _a;
+        (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.restore();
+    }
+    TakeSnapShot() {
+        var _a, _b;
+        this.snapshot = (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.getImageData(0, 0, this.Width, this.Height);
+        return (_b = this.ctx) === null || _b === void 0 ? void 0 : _b.getImageData(0, 0, this.Width, this.Height);
+    }
+    restoreSnapShot() {
+        var _a;
+        (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.putImageData(this.snapshot, 0, 0);
+    }
+    restorePrevSnapShot(snapshot) {
+        var _a;
+        (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.putImageData(snapshot, 0, 0);
     }
     Count() {
         return GameCanvas._rectCount++;
@@ -37,6 +72,24 @@ export class GameCanvas {
     ClearCanvas() {
         this.SaveState();
         this.drawRectangle(0, 0, this.gameCanvas.width, this.gameCanvas.height, this.gameCanvas.style.backgroundColor);
+        this.RestoreState();
+    }
+    grid(rows, columns) {
+        this.SaveState();
+        //must be declared before beginpath
+        let canvasBoundingRect = this.gameCanvas.getBoundingClientRect();
+        let x = 0;
+        let y = 0;
+        let width = canvasBoundingRect.width;
+        let height = canvasBoundingRect.height;
+        let cellWidth = width / rows;
+        let cellHeight = height / columns;
+        for (var currentY = y; currentY <= y + rows * cellHeight; currentY += cellHeight) {
+            this.lineDrawing(x, currentY, x + columns * cellWidth, currentY, 1, "grey", "square", "round", { x: 5, y: 5 });
+        }
+        for (var currentX = x; currentX <= x + columns * cellWidth; currentX += cellWidth) {
+            this.lineDrawing(currentX, y, currentX, y + rows * cellHeight, 1, "grey", "square", "round", { x: 5, y: 5 });
+        }
         this.RestoreState();
     }
     draw(color, strokeColor, linewidth) {
@@ -55,75 +108,141 @@ export class GameCanvas {
             this.ctx.strokeRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
         }
     }
+    drawMousePos(e, { drawText = false }) {
+        var _a;
+        this.ctx != null ? (this.ctx.fillStyle = "black") : null;
+        this.ctx != null ? (this.ctx.font = "normal bold 2em courier") : null;
+        var x = e.clientX - this.gameCanvas.getBoundingClientRect().left;
+        var y = e.clientY - this.gameCanvas.getBoundingClientRect().top;
+        if (drawText) {
+            var text = x.toFixed(2) + "," + y.toFixed(2);
+            this.ClearCanvas();
+            (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.fillText(text, 100, 200);
+        }
+        else {
+            return { x: x, y: y };
+        }
+    }
+    getMousePos(e) {
+        var x = e.clientX - this.gameCanvas.getBoundingClientRect().left;
+        var y = e.clientY - this.gameCanvas.getBoundingClientRect().top;
+        return { x: x, y: y };
+    }
     drawRectangle(x, y, width, height, color) {
-        this.ctx.fillStyle = color;
-        this.ctx.fillRect(x, y, width, height);
+        var _a, _b;
+        this.SaveState();
+        this.ctx != null ? (this.ctx.fillStyle = color) : false;
+        (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.fillRect(x, y, width, height);
         this.Count();
-        this.ctx.strokeStyle = "black";
-        this.ctx.lineWidth = 2;
-        this.ctx.strokeRect(x, y, width, height);
+        this.ctx != null ? (this.ctx.strokeStyle = "black") : false;
+        this.ctx != null ? (this.ctx.lineWidth = 2) : false;
+        (_b = this.ctx) === null || _b === void 0 ? void 0 : _b.strokeRect(x, y, width, height);
+        this.RestoreState();
+    }
+    drawDashedRect(x, y, width, height) {
+        var _a, _b;
+        this.SaveState();
+        (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.setLineDash([5, 5]);
+        // this.ctx?.fillRect(x, y, width, height);
+        // this.Count();
+        this.ctx != null ? (this.ctx.strokeStyle = "black") : false;
+        this.ctx != null ? (this.ctx.lineWidth = 1) : false;
+        (_b = this.ctx) === null || _b === void 0 ? void 0 : _b.strokeRect(x, y, width, height);
+        this.RestoreState();
     }
     drawShadow(color, offSetX, offSetY, blur) {
-        this.ctx.shadowColor = color;
-        this.ctx.shadowOffsetX = offSetX;
-        this.ctx.shadowOffsetY = offSetY;
-        this.ctx.shadowBlur = blur;
+        this.ctx != null ? (this.ctx.shadowColor = color) : false;
+        this.ctx != null ? (this.ctx.shadowOffsetX = offSetX) : false;
+        this.ctx != null ? (this.ctx.shadowOffsetY = offSetY) : false;
+        this.ctx != null ? (this.ctx.shadowBlur = blur) : false;
     }
     lineDrawing(x1, y1, x2, y2, lineWidth, color, lineCap, lineJoin, setLineDash) {
-        lineJoin ? (this.ctx.lineJoin = lineJoin) : (this.ctx.lineJoin = "round");
-        lineCap ? (this.ctx.lineCap = lineCap) : (this.ctx.lineCap = "round");
+        var _a, _b, _c, _d;
+        this.SaveState();
+        lineJoin
+            ? this.ctx != null
+                ? (this.ctx.lineJoin = lineJoin)
+                : false
+            : this.ctx != null
+                ? (this.ctx.lineJoin = "round")
+                : false;
+        lineCap
+            ? this.ctx != null
+                ? (this.ctx.lineCap = lineCap)
+                : false
+            : this.ctx != null
+                ? (this.ctx.lineCap = "round")
+                : false;
         if (setLineDash)
-            this.ctx.setLineDash([setLineDash.x, setLineDash.y]);
-        this.ctx.beginPath();
-        this.ctx.lineWidth = lineWidth;
-        this.ctx.moveTo(x1, y1);
-        this.ctx.lineTo(x2, y2);
-        this.ctx.strokeStyle = color;
-        this.ctx.stroke();
+            this.ctx != null
+                ? this.ctx.setLineDash([setLineDash.x, setLineDash.y])
+                : false;
+        this.ctx != null ? (this.ctx.lineWidth = lineWidth) : false;
+        this.ctx != null ? (this.ctx.strokeStyle = color) : false;
+        (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.beginPath();
+        (_b = this.ctx) === null || _b === void 0 ? void 0 : _b.moveTo(x1, y1);
+        (_c = this.ctx) === null || _c === void 0 ? void 0 : _c.lineTo(x2, y2);
+        (_d = this.ctx) === null || _d === void 0 ? void 0 : _d.stroke();
+        this.RestoreState();
     }
-    drawCircle(x, y, radius, startAngle, endAngle, fillcolor, strokecolor, circleStatus, lineWidth, strokeStyle) {
-        this.ctx.beginPath();
-        this.ctx.arc(x, y, radius, startAngle, endAngle * Math.PI, circleStatus === null || circleStatus === void 0 ? void 0 : circleStatus.clockStatus);
+    circleDrawing(x, y, radius, startAngle, endAngle, fillStatus, fillcolor, strokecolor, circleStatus, lineWidth, strokeStyle) {
+        var _a, _b, _c, _d, _e, _f, _g;
+        this.SaveState();
+        (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.beginPath();
+        (_b = this.ctx) === null || _b === void 0 ? void 0 : _b.arc(x, y, radius, startAngle, endAngle * Math.PI, circleStatus);
         if (lineWidth)
-            this.ctx.linewidth = lineWidth;
-        if (strokeStyle)
+            this.ctx != null ? (this.ctx.lineWidth = lineWidth) : false;
+        if (strokeStyle && this.ctx != null)
             this.ctx.strokeStyle = strokeStyle;
-        if (fillcolor) {
-            this.ctx.fillStyle = fillcolor;
-            this.ctx.fill();
+        if (CircleOptions.dashedStroke) {
+            (_c = this.ctx) === null || _c === void 0 ? void 0 : _c.setLineDash([5, 5]);
         }
-        if (strokecolor) {
-            this.ctx.strokeStyle = strokecolor;
-            this.ctx.stroke();
+        if (CircleOptions.fill && fillcolor) {
+            this.ctx != null ? (this.ctx.fillStyle = fillcolor) : null;
+            (_d = this.ctx) === null || _d === void 0 ? void 0 : _d.fill();
         }
-        this.ctx.stroke();
-        this.ctx.closePath();
+        if (CircleOptions.stroke || (CircleOptions.dashedStroke && strokecolor)) {
+            this.ctx != null ? (this.ctx.strokeStyle = strokecolor) : null;
+            (_e = this.ctx) === null || _e === void 0 ? void 0 : _e.stroke();
+        }
+        (_f = this.ctx) === null || _f === void 0 ? void 0 : _f.stroke();
+        (_g = this.ctx) === null || _g === void 0 ? void 0 : _g.closePath();
+        this.RestoreState();
     }
-    drawPath() { }
+    drawPath(x1, y1, x2, y2, x3, y3) {
+        var _a, _b, _c, _d, _e, _f;
+        this.ctx != null ? (this.ctx.strokeStyle = "blue") : null;
+        this.ctx != null ? (this.ctx.fillStyle = "red") : null;
+        this.ctx != null ? (this.ctx.lineWidth = 5) : null;
+        (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.beginPath();
+        (_b = this.ctx) === null || _b === void 0 ? void 0 : _b.moveTo(x1, y1);
+        (_c = this.ctx) === null || _c === void 0 ? void 0 : _c.lineTo(x2, y2);
+        (_d = this.ctx) === null || _d === void 0 ? void 0 : _d.lineTo(x3, y3);
+        (_e = this.ctx) === null || _e === void 0 ? void 0 : _e.fill();
+        (_f = this.ctx) === null || _f === void 0 ? void 0 : _f.stroke();
+    }
     drawCurves(typeOfCurve) { }
     drawText(text, x, y, font, fillStyle, strokeStyle, underLineText, textAlign) {
-        if (font)
+        var _a, _b, _c, _d;
+        if (font && this.ctx != null)
             this.ctx.font = `${font.fontSize}px ${font.fontFamily}`;
-        this.ctx.fillStyle = fillStyle;
+        this.ctx != null ? (this.ctx.fillStyle = fillStyle) : false;
         this.SaveState();
-        this.ctx.strokeStyle = strokeStyle;
-        this.ctx.fillText(text, x, y);
+        this.ctx != null ? (this.ctx.strokeStyle = strokeStyle) : false;
+        this.ctx != null ? this.ctx.fillText(text, x, y) : false;
         if (strokeStyle)
-            this.ctx.strokeText(text, x, y);
-        this.ctx.textAlign = textAlign;
+            (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.strokeText(text, x, y);
+        this.ctx != null ? (this.ctx.textAlign = textAlign) : false;
         this.RestoreState();
         if (underLineText) {
-            this.ctx.textWH = this.ctx.measureText(text);
-            this.ctx.beginPath();
-            this.ctx.strokeStyle = "black";
-            this.ctx.lineWidth = 2;
-            this.ctx.moveTo(x, y + 5);
-            this.ctx.lineTo(x + Math.round(this.ctx.textWH.width), y + 5);
-            this.ctx.stroke();
+            // this.ctx!=null?this.ctx.textWH = this.ctx.measureText(text):false
+            (_b = this.ctx) === null || _b === void 0 ? void 0 : _b.beginPath();
+            this.ctx != null ? (this.ctx.strokeStyle = "black") : false;
+            this.ctx != null ? (this.ctx.lineWidth = 2) : false;
+            (_c = this.ctx) === null || _c === void 0 ? void 0 : _c.moveTo(x, y + 5);
+            // this.ctx?.lineTo(x + Math.round(this.ctx.textWH.width), y + 5);
+            (_d = this.ctx) === null || _d === void 0 ? void 0 : _d.stroke();
         }
     }
 }
-/**
- *
- */
 GameCanvas._rectCount = 0;
